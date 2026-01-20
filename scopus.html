@@ -2,86 +2,62 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>رادار سكوباس 2026 | مكتب أبحاث</title>
+    <title>رادار سكوباس | مكتب أبحاث</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <style>body { font-family: 'Tajawal', sans-serif; }</style>
 </head>
-<body class="bg-[#0F172A] text-white min-h-screen">
-    <div class="max-w-4xl mx-auto p-6 md:p-12">
-        <header class="text-center mb-12">
-            <h1 class="text-4xl font-black text-amber-500 mb-4">رادار سكوباس 2026</h1>
-            <p class="text-slate-400">خدمة فحص المجلات الدولية المعتمدة للترقيات العلمية - مكتب أبحاث</p>
-        </header>
+<body class="bg-[#0F172A] text-white min-h-screen p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-black text-amber-500 mb-8 pr-4 border-r-8 border-amber-600 italic">رادار سكوباس 2026</h1>
         
         <div class="bg-white/5 p-8 rounded-[2rem] border border-white/10 shadow-2xl mb-12">
             <div class="flex flex-col md:flex-row gap-4">
-                <input type="text" id="jName" placeholder="أدخل اسم المجلة بالإنجليزية (مثل: Nature)..." 
-                       class="flex-1 p-5 bg-slate-800 rounded-2xl border border-slate-700 outline-none focus:border-amber-500 transition text-lg text-right">
-                <button onclick="startSearch()" class="bg-amber-600 px-10 py-5 rounded-2xl font-black text-xl hover:bg-amber-700 transition shadow-lg shadow-amber-900/20">
-                    فحص المجلة
-                </button>
+                <input type="text" id="jName" placeholder="أدخل اسم المجلة بالإنجليزية (مثلاً: Nature)..." 
+                       class="flex-1 p-5 bg-slate-800 rounded-2xl border border-slate-700 outline-none focus:border-amber-500 transition text-lg">
+                <button onclick="startSearch()" class="bg-amber-600 px-10 py-5 rounded-2xl font-black text-xl hover:bg-amber-700 shadow-lg">فحص المجلة</button>
             </div>
-            <p class="text-xs text-slate-500 mt-4 text-center italic">ملاحظة: يتم جلب البيانات مباشرة من مستوعبات Elsevier العالمية</p>
         </div>
 
         <div id="results" class="grid gap-6">
-            <div class="text-center py-10 text-slate-500 italic">النتائج ستظهر هنا بعد الضغط على زر الفحص</div>
+            <p class="text-slate-500 text-center italic">النتائج تظهر هنا مباشرة من قاعدة بيانات Elsevier العالمية</p>
         </div>
     </div>
 
     <script>
     async function startSearch() {
-        // مفتاح الـ API الخاص بك
-        const key = "4799123701c7445a4ba5019adb84fe2e"; 
-        const query = document.getElementById('jName').value.trim();
+        const key = "4799123701c7445a4ba5019adb84fe2e"; // مفتاحك الفعال
+        const query = document.getElementById('jName').value;
         const resBox = document.getElementById('results');
         
-        if(!query) {
-            alert("يرجى إدخال اسم المجلة أولاً");
-            return;
-        }
+        if(!query) return alert("يرجى كتابة اسم المجلة بالإنجليزية");
 
-        // حالة التحميل
-        resBox.innerHTML = '<div class="text-center py-20 text-amber-500 animate-pulse font-bold text-2xl">جاري التحقق من الفهرسة الدولية...</div>';
+        resBox.innerHTML = '<div class="text-center py-10 text-amber-500 animate-pulse font-bold text-xl">جاري استخراج البيانات الأكاديمية...</div>';
 
         try {
-            // طلب البيانات من سكوباس
             const response = await fetch(`https://api.elsevier.com/content/search/scopus?query=TITLE(${query})&apiKey=${key}`, {
                 headers: {'Accept': 'application/json'}
             });
-            
             const data = await response.json();
             const items = data['search-results']['entry'];
             
-            resBox.innerHTML = ""; // مسح رسالة التحميل
-
+            resBox.innerHTML = "";
             if (items && items.length > 0) {
                 items.forEach(item => {
-                    // بناء بطاقة النتيجة لكل مجلة
                     resBox.innerHTML += `
-                        <div class="p-8 bg-white/5 rounded-[2rem] border border-white/10 hover:border-amber-500 transition-all duration-300 shadow-xl group">
-                            <div class="flex justify-between items-start mb-4">
-                                <h3 class="text-2xl font-bold text-white group-hover:text-amber-400 transition">${item['dc:title']}</h3>
-                                <span class="bg-green-500/20 text-green-400 px-4 py-1 rounded-full text-sm border border-green-500/30 font-bold">نشط في سكوباس</span>
-                            </div>
-                            <p class="text-slate-400 mb-6 italic text-right">الناشر: ${item['prism:publicationName']}</p>
-                            <div class="flex flex-wrap gap-3">
-                                <div class="bg-slate-800 px-4 py-2 rounded-xl text-sm border border-slate-700">
-                                    <span class="text-slate-500">ISSN:</span> ${item['prism:issn'] || 'N/A'}
-                                </div>
-                                <div class="bg-blue-600/20 text-blue-400 px-4 py-2 rounded-xl text-sm border border-blue-600/30 font-bold">
-                                    تحديث 2026 - مكتب أبحاث
-                                </div>
+                        <div class="p-8 bg-white/5 rounded-[2rem] border border-white/10 hover:border-amber-500 transition shadow-xl">
+                            <h3 class="text-2xl font-bold text-white mb-2">${item['dc:title']}</h3>
+                            <p class="text-slate-400 mb-4 italic">الناشر: ${item['prism:publicationName']}</p>
+                            <div class="flex gap-3">
+                                <span class="bg-green-600/20 text-green-400 px-4 py-1 rounded-full border border-green-600/30 text-sm font-bold font-sans italic">Scopus Indexed 2026</span>
                             </div>
                         </div>`;
                 });
             } else {
-                resBox.innerHTML = '<div class="p-12 bg-red-900/10 border border-red-900/30 text-red-400 rounded-[2rem] text-center font-bold text-xl">عذراً، هذه المجلة غير موجودة في مستوعبات سكوباس الحالية. يرجى التأكد من الاسم بالإنجليزية.</div>';
+                resBox.innerHTML = '<div class="p-10 bg-red-900/10 border border-red-900/30 text-red-400 rounded-3xl text-center font-bold">عذراً، لم يتم العثور على المجلة في مستوعبات سكوباس الحالية.</div>';
             }
-        } catch (error) {
-            resBox.innerHTML = '<div class="text-red-500 text-center font-bold text-xl px-4">حدث خطأ في الاتصال. يرجى التأكد من جودة الإنترنت أو صلاحية مفتاح الـ API.</div>';
+        } catch (e) {
+            resBox.innerHTML = '<div class="text-red-500 text-center font-bold">حدث خطأ في الاتصال، يرجى المحاولة لاحقاً.</div>';
         }
     }
     </script>
